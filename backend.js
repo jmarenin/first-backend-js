@@ -5,6 +5,7 @@ const port = 5000;
 
 app.use(express.json());
 
+// User list
 const users = { 
     users_list :
     [
@@ -36,11 +37,12 @@ const users = {
     ]
  }
 
- 
+
 const findUserByName = (name) => {
     return users['users_list'].filter((user) => user['name'] === name);
 }
 
+// get requests
 app.get('/', (req, res) => {
     res.send('Hello World');
 });
@@ -66,11 +68,12 @@ app.get('/users/:id', (req, res) => {
     }
 });
 
+
 function findUserById(id) {
     return users['users_list'].find( (user) => user['id'] === id);
 }
 
-
+// post request
 app.post('/users', (req, res) => {
     const userToAdd = req.body;
     addUser(userToAdd);
@@ -81,6 +84,17 @@ function addUser(user){
     users['users_list'].push(user);
 }
 
+// delete request
+app.delete('/users/:id', (req, res) => {
+    const id = req.params['id']; //or req.params.id
+    let result = findUserById(id);
+    if (result === undefined || result.length == 0)
+        res.status(404).send('Resource not found.');
+    else {
+        users['users_list'] = users['users_list'].filter( (user) => user !== result);
+        res.status(200).end();
+    }
+});
 
 
 app.listen(port, () => {
